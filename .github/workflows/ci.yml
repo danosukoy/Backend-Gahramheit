@@ -21,14 +21,19 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
 
-      # PASO CLAVE: Asegurar que Docker esté disponible para Testcontainers
-      - name: Verify Docker Status
-        run: |
-          docker info
-          sudo chmod 666 /var/run/docker.sock
+    # PASO CRUCIAL PARA TESTCONTAINERS EN CI:
+    # 1. Da permisos de lectura/escritura al socket de Docker para el usuario actual.
+    # 2. Configura las variables de entorno de Testcontainers a nivel de Host.
+    # 3. Fuerza el uso de la IP local interna si hay problemas de DNS en el contenedor.
+    name: Setup and Verify Docker Permissions
+    run: |
+      sudo chmod 666 /var/run/docker.sock
+      echo "TESTCONTAINERS_HOST_OVERRIDE=$(ip -4 addr show docker0 | grep -oP '(?<=inet\s)\d+(\.\d+){3}')" >> $GITHUB_ENV
 
       - name: Build with Maven and Run Tests
         env:
-          # Optimiza Testcontainers para que no use Ryuk (el contenedor de limpieza) si da problemas de timeout
+          # Desactivar Ryuk ayuda si el pipeline tiene restricciones de privilegios para borrar contenedores huérfanos
           TESTCONTAINERS_RYUK_DISABLED: "true"
+          # Si tus tests usan variables específicas para inicializar la BD, las puedes definir aquí
+          SPRING_PROFILES_ACTIVE: test
         run: mvn -B clean verify
