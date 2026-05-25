@@ -5,7 +5,10 @@ import com.example.gahramheit.entity.UserAnimeListId;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface UserAnimeListRepository extends JpaRepository<UserAnimeList, UserAnimeListId> {
+    List<UserAnimeList> findByUserId(Long userId);
 }
 
