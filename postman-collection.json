@@ -360,7 +360,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n    \"score\": 9,\n    \"comment\": \"Excelente anime, altamente recomendado para fans del género shonen.\"\n}",
+                            "raw": "{\n    \"score\": 9,\n    \"comment\": \"Excelente anime, altamente recomendado para fans del género shonen.\"\n"},
                         "url": {
                             "raw": "{{baseUrl}}/api/reviews?userId=1",
                             "host": [
