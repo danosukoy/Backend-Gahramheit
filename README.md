@@ -32,6 +32,12 @@
   - [4. Modelo de Entidades](#4-modelo-de-entidades)
     - [Diagrama de Entidades](#diagrama-de-entidades)
     - [Descripción de Entidades](#descripción-de-entidades)
+    - [1. User (Usuario)](#1-user-usuario)
+    - [2. Anime](#2-anime)
+    - [3. Genre (Género)](#3-genre-género)
+    - [4. Episode (Episodio)](#4-episode-episodio)
+    - [5. Review (Reseña)](#5-review-reseña)
+    - [6. UserAnimeList (Lista de Seguimiento del Usuario)](#6-useranimelist-lista-de-seguimiento-del-usuario)
   - [5. Testing y Manejo de Errores](#5-testing-y-manejo-de-errores)
     - [Niveles de Testing Realizados](#niveles-de-testing-realizados)
     - [Resultados](#resultados)
@@ -80,7 +86,7 @@ La plataforma backend de **Gahramheit** posee los servicios necesarios para sopo
 2. **Seguimiento Dinámico (Watchlist):** Gestión individualizada del progreso de visualización, permitiendo marcar episodios específicos como vistos y categorizar el estado de la serie en la lista personal del usuario.
 3. **Sistema de Calificación y Feedback (Rating):** Persistencia de puntuaciones numéricas y comentarios escritos sobre series completas o episodios de forma independiente.
 4. **Foros de Discusión Comunitarios:** Habilitación de espacios de interacción social segmentados por serie, permitiendo la comunicación directa entre los usuarios de la plataforma.
-5. **Generador Automatizado de "Wrap" (Yearly Recap):** Algoritmo analítico encargado de agrupar hábitos de consumo, calcular tiempos totales de visualización y deducir géneros favoritos a fin de añ.
+5. **Generador Automatizado de "Wrap" (Yearly Recap):** Algoritmo analítico encargado de agrupar hábitos de consumo, calcular tiempos totales de visualización y deducir géneros favoritos a fin de año.
 6. **Sistema de Recompensas y Logros:** Gamificación integrada que otorga insignias de mérito (ej. "Maestro del Shonen") al completar metas del perfil.
 
 ### Tecnologías Utilizadas
@@ -100,7 +106,54 @@ La plataforma backend de **Gahramheit** posee los servicios necesarios para sopo
 ![Diagrama Entidad-Relación](imgs/d_e_r.png)
 
 ### Descripción de Entidades
-[Explicar detalladamente las entidades principales del negocio, detallando sus atributos más representativos y los tipos de relaciones implementadas entre ellas, por ejemplo: @OneToMany, @ManyToOne, @ManyToMany, indicando las configuraciones de cascade types o fetch types optimizados.]
+---
+
+### 1. User (Usuario)
+Representa a los usuarios registrados en la plataforma. 
+* **Atributos clave:** `id` (Autoincremental), `username` (Único), `email` (Único) y `password`.
+* **Relaciones:**
+    * `@OneToMany` con `Review`: Un usuario puede escribir múltiples reseñas. Configurado con `CascadeType.ALL` y `orphanRemoval = true` para asegurar que si un usuario es eliminado, sus reseñas asociadas se borren de forma automática.
+    * `@OneToMany` con `UserAnimeList`: Relación con la lista personalizada de animes del usuario. Cuenta con la misma configuración de cascada completa (`CascadeType.ALL`).
+* **Optimización:** Se aplican las anotaciones `@ToString.Exclude` y `@EqualsAndHashCode.Exclude` de Lombok en las colecciones para prevenir excepciones de recursividad infinita (`StackOverflowError`) durante la serialización o logs.
+
+### 2. Anime
+Es la entidad central del catálogo de la aplicación.
+* **Atributos clave:** `id`, `title` (Obligatorio), `malId` (ID externo de MyAnimeList), `episodesCount` e `imageUrl`.
+* **Relaciones:**
+    * `@OneToMany` con `Episode`: Un anime contiene una lista ordenada de episodios. Configurado en cascada estricta (`CascadeType.ALL, orphanRemoval = true`).
+    * `@OneToMany` con `Review`: Mapea todas las opiniones asignadas a este anime específico.
+    * `@OneToMany` con `UserAnimeList`: Mapea la presencia de este anime en las distintas colecciones de los usuarios.
+    * `@ManyToMany` con `Genre`: Relación bidireccional que vincula los animes con sus respectivos géneros a través de la tabla intermedia explícita `anime_genre` mediante `@JoinTable`.
+
+### 3. Genre (Género)
+Clasificación temática para los animes del catálogo.
+* **Atributos clave:** `id`, `name` (Obligatorio y único, ej: "Action", "Sci-Fi").
+* **Relaciones:**
+    * `@ManyToMany(mappedBy = "genres")`: Relación bidireccional inversa con la entidad `Anime`. Al utilizar `mappedBy`, se establece que la entidad `Anime` es la dueña de la relación, evitando la duplicidad de tablas intermedias en la base de datos.
+
+### 4. Episode (Episodio)
+Instancia que pertenece a un anime específico.
+* **Atributos clave:** `id`, `episodeNumber` (Obligatorio) y `title`.
+* **Relaciones:**
+    * `@ManyToOne` con `Anime`: Relación obligatoria (`nullable = false`) hacia su anime contenedor.
+* **Optimización:** Configurado con `fetch = FetchType.LAZY`. Esto evita la carga innecesaria del objeto `Anime` completo en memoria cada vez que se realiza una consulta de episodios independientes (evitando el problema de rendimiento $N+1$).
+
+### 5. Review (Reseña)
+Almacena las evaluaciones y comentarios de los usuarios sobre los animes.
+* **Atributos clave:** `id`, `score` (Puntaje numérico), `comment` (Mapeado como tipo `text` en BD para admitir textos largos) y `createdAt` (Fecha de creación).
+* **Relaciones:**
+    * `@ManyToOne` con `User`: Vincula la reseña con su autor.
+    * `@ManyToOne` con `Anime`: Vincula la reseña con el anime evaluado.
+* **Optimización:** Ambas relaciones `@ManyToOne` están configuradas con `fetch = FetchType.LAZY` para optimizar las consultas estructuradas a la base de datos.
+
+### 6. UserAnimeList (Lista de Seguimiento del Usuario)
+Entidad intermedia que gestiona la relación de muchos a muchos con atributos adicionales entre un `User` y un `Anime` (rompiendo la relación clásica N:M en dos relaciones 1:N).
+* **Atributos clave:** `status` (Mapeado como un Enum de tipo String: `WATCHING`, `COMPLETED`, `DROPPED`) y `currentEpisode` (Progreso actual del usuario).
+* **Clave Primaria Compuesta:** Implementa la anotación `@EmbeddedId` apuntando a la clase embebible `UserAnimeListId` (la cual contiene los campos `userId` y `animeId` e implementa `Serializable`).
+* **Relaciones y Mapeo:**
+    * `@ManyToOne` con `User` y `@ManyToOne` con `Anime`.
+    * Utiliza `@MapsId("userId")` y `@MapsId("animeId")` para vincular los atributos de la clave compuesta directamente con las entidades externas correspondientes, asegurando consistencia de datos a nivel físico.
+* **Optimización:** Ambas uniones están optimizadas con `fetch = FetchType.LAZY` para evitar sobrecargas al interactuar con las listas de reproducción.
 
 ---
 
@@ -141,19 +194,21 @@ La plataforma backend de **Gahramheit** posee los servicios necesarios para sopo
 
 ## 9. Conclusión
 
-* **Logros del Proyecto:** [Resumir los hitos alcanzados y el impacto de la solución técnica backend diseñada frente al problema originalmente planteado.]
-* **Aprendizajes Clave:** [Reflexionar sobre los conocimientos conceptuales o procedimentales más significativos obtenidos por los integrantes del equipo durante el proceso de desarrollo.]
-* **Trabajo Futuro:** [Proponer y sugerir posibles mejoras de software, refactorizaciones arquitectónicas o nuevas extensiones funcionales para el sistema a mediano o largo plazo.]
-
+* **Logros del Proyecto:** Se logró construir un motor backend robusto que resuelve con éxito el problema de la dispersión de datos en los aficionados al anime, ofreciendo una plataforma unificada para el tracking diario y la generación interactiva de recaps históricos.
+  
+* **Aprendizajes Clave:** El desarrollo del sistema permitió al equipo comprender la importancia práctica del desacoplamiento arquitectónico mediante capas lógicas bien definidas, así como la correcta estructuración y optimización de relaciones complejas en JPA para evitar fallas lógicas comunes.
+  
+* **Trabajo Futuro:** Como extensiones del sistema para próximas versiones de software, se plantea la incorporación de búsquedas predictivas optimizadas con Elasticsearch y la implementación de mecanismos avanzados de almacenamiento en caché distribuidos a través de un servidor Redis independiente para blindar por completo las consultas externas de la API de Jikan.
 ---
 
 ## 10. Apéndices
 
 ### Licencia
-Este proyecto se distribuye bajo la licencia [Especificar el tipo de licencia, ej. MIT License, Apache License 2.0, etc.].
+Este proyecto se distribuye bajo los términos y directrices de la licencia **MIT License**, permitiendo el uso y modificación libre del software con fines educativos.
 
 ---
 
 ## 11. Referencias
-* [Referencia Bibliográfica 1 o Enlace Técnico utilizado]
-* [Referencia Bibliográfica 2 o Documentación del API]
+* *Spring Boot Reference Documentation.* Spring IO. Documentación Oficial del Framework.
+* *Jikan API - Open-Source MyAnimeList API.* jikan.moe [cite: 296]
+* *Jakarta Bean Validation Specification.* jakarta.ee [cite: 521]
