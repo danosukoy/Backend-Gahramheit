@@ -1,6 +1,7 @@
 package com.example.gahramheit.controller;
 
-import com.example.gahramheit.dto.UserDTO;
+import com.example.gahramheit.dto.UserResponseDTO;
+import com.example.gahramheit.dto.UserUpdateDTO;
 import com.example.gahramheit.dto.UserProfileResDTO;
 import com.example.gahramheit.dto.UserRecapResDTO;
 import com.example.gahramheit.service.UserService;
@@ -23,7 +24,7 @@ public class UserController {
     }
 
     @GetMapping("/username/{username}")
-    public ResponseEntity<UserDTO> getUserByUsername(@PathVariable String username) {
+    public ResponseEntity<UserResponseDTO> getUserByUsername(@PathVariable String username) {
         return ResponseEntity.ok(userService.getUserByUsername(username));
     }
 
@@ -40,9 +41,9 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserDTO> updateUser(
+    public ResponseEntity<UserUpdateDTO> updateUser(
             @PathVariable Long id,
-            @Valid @RequestBody UserDTO request) {
+            @Valid @RequestBody UserUpdateDTO request) {
         return ResponseEntity.ok(userService.updateUser(id, request));
     }
 

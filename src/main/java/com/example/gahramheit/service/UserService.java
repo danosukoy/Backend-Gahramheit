@@ -1,21 +1,22 @@
 package com.example.gahramheit.service;
 
-import com.example.gahramheit.dto.UserDTO;
 import com.example.gahramheit.dto.UserProfileResDTO;
 import com.example.gahramheit.dto.UserRecapResDTO;
+import com.example.gahramheit.dto.UserResponseDTO;
+import com.example.gahramheit.dto.UserUpdateDTO;
 import com.example.gahramheit.entity.Status;
 import com.example.gahramheit.entity.User;
 import com.example.gahramheit.entity.UserAnimeList;
 import com.example.gahramheit.exception.ResourceNotFoundException;
 import com.example.gahramheit.repository.UserAnimeListRepository;
 import com.example.gahramheit.repository.UserRepository;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -31,10 +32,10 @@ public class UserService {
         return buildProfile(user);
     }
 
-    public UserDTO getUserByUsername(String username) {
+    public UserResponseDTO getUserByUsername(String username) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found: " + username));
-        return modelMapper.map(user, UserDTO.class);
+        return modelMapper.map(user, UserResponseDTO.class);
     }
 
     public UserProfileResDTO getUserProfile(Long id) {
@@ -74,16 +75,15 @@ public class UserService {
         return dto;
     }
 
-    public UserDTO updateUser(Long id, UserDTO request) {
+    public UserUpdateDTO updateUser(Long id, @Valid UserUpdateDTO request) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
 
         Optional.ofNullable(request.getUsername()).ifPresent(user::setUsername);
         Optional.ofNullable(request.getEmail()).ifPresent(user::setEmail);
-        Optional.ofNullable(request.getPassword()).ifPresent(user::setPassword);
 
         userRepository.save(user);
-        return modelMapper.map(user, UserDTO.class);
+        return modelMapper.map(user, UserUpdateDTO.class);
     }
 
     public void deleteUser(Long id) {
