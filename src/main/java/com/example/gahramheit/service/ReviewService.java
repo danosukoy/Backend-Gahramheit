@@ -5,12 +5,14 @@ import com.example.gahramheit.dto.ReviewResDTO;
 import com.example.gahramheit.entity.Anime;
 import com.example.gahramheit.entity.Review;
 import com.example.gahramheit.entity.User;
+import com.example.gahramheit.event.AnimeReviewedEvent;
 import com.example.gahramheit.exception.ResourceNotFoundException;
 import com.example.gahramheit.repository.AnimeRepository;
 import com.example.gahramheit.repository.ReviewRepository;
 import com.example.gahramheit.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -25,6 +27,7 @@ public class ReviewService {
     private final AnimeRepository animeRepository;
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
+    private final ApplicationEventPublisher eventPublisher; // ---> NUEVO (Spring lo inyecta automáticamente por @RequiredArgsConstructor)
 
     public ReviewResDTO createReview(Long userId, ReviewCreateReqDTO request) {
         User user = userRepository.findById(userId)
@@ -42,6 +45,7 @@ public class ReviewService {
                 .build();
 
         reviewRepository.save(review);
+        eventPublisher.publishEvent(new AnimeReviewedEvent(review.getAnime().getId(), review.getScore()));
         return toDto(review);
     }
 

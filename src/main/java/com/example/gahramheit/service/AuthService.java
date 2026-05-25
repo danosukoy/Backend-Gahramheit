@@ -4,11 +4,13 @@ import com.example.gahramheit.dto.AuthResDTO;
 import com.example.gahramheit.dto.UserLoginReqDTO;
 import com.example.gahramheit.dto.UserRegisterReqDTO;
 import com.example.gahramheit.entity.User;
+import com.example.gahramheit.event.UserRegisteredEvent;
 import com.example.gahramheit.exception.DuplicateResourceException;
 import com.example.gahramheit.exception.ResourceNotFoundException;
 import com.example.gahramheit.repository.UserRepository;
 import com.example.gahramheit.security.JwtUtils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -23,6 +25,7 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtils jwtUtils;
+    private final ApplicationEventPublisher eventPublisher;
 
     public AuthResDTO login(UserLoginReqDTO request) {
         Authentication authentication = authenticationManager.authenticate(
@@ -42,6 +45,7 @@ public class AuthService {
         return AuthResDTO.builder().token(token).user(userInfo).build();
     }
 
+
     public AuthResDTO register(UserRegisterReqDTO request) {
         if (userRepository.findByUsername(request.getUsername()).isPresent()) {
             throw new DuplicateResourceException("Username already in use: " + request.getUsername());
@@ -57,6 +61,8 @@ public class AuthService {
                 .build();
 
         userRepository.save(user);
+
+        eventPublisher.publishEvent(new UserRegisteredEvent(user.getEmail(), user.getUsername()));
 
         String token = jwtUtils.generateToken(user.getUsername());
 
