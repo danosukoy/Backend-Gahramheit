@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -32,6 +33,21 @@ public class Anime {
 
     @Column(name = "image_url")
     private String imageUrl;
+
+    @Column(columnDefinition = "TEXT")
+    private String synopsis;
+
+    private String studio;
+
+    private String director;
+
+    @Column(name = "release_year")
+    private Integer releaseYear;
+
+    @ElementCollection
+    @CollectionTable(name = "voice_actors", joinColumns = @JoinColumn(name = "anime_id"))
+    @Column(name = "actor_name")
+    private List<String> actoresVoz = new ArrayList<>();
 
     @OneToMany(mappedBy = "anime", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
