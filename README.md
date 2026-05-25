@@ -186,10 +186,13 @@ Entidad intermedia que gestiona la relación de muchos a muchos con atributos ad
 ---
 
 ## 8. GitHub & Management
-[Describir con precisión la manera en que el equipo organizó el flujo de trabajo utilizando herramientas de gestión como GitHub Projects o GitHub Issues, detallando la asignación de tareas, etiquetas (labels) y cumplimiento de deadlines.]
+### Flujo de Trabajo y Gestión del Proyecto
+Para garantizar un trbajo coordinado, ordenado, transparente, el equipo eligió por **Github Issues** con una estrategía de ramificación estrucuturada.
+* **Ramificación Individual (`feat/`):** El desarrollo se organizó mediante donde cada integrante trabajó de forma aislada y segura en su propia rama. Para ello, se crearon ramas específicas vinculadas a cada integrante la nomenclatura estricta:
+  `feat/{nombre_de_integrante}`
+* **Pull Requests:** Una vez que un integrante culminaba el desarrollo en su respectiva rama `feat/`, abría un *Pull Request* (PR) hacia la rama principal `main`. Cada PR fue sometido a una revisión por pares (*Code Review*) para asegurar el cumplimiento de la arquitectura en capas, las validaciones de datos y las buenas prácticas de Spring Boot antes de autorizar su integración final.
 
-[Asimismo, detallar el uso de GitHub Actions e ilustrar el flujo de integración continua (CI/CD) implementado de manera particular para compilar, probar o desplegar el backend.]
-
+### Integración Continua (CI/CD) con GitHub Actions
 ---
 
 ## 9. Conclusión
@@ -210,5 +213,5 @@ Este proyecto se distribuye bajo los términos y directrices de la licencia **MI
 
 ## 11. Referencias
 * *Spring Boot Reference Documentation.* Spring IO. Documentación Oficial del Framework.
-* *Jikan API - Open-Source MyAnimeList API.* jikan.moe [cite: 296]
-* *Jakarta Bean Validation Specification.* jakarta.ee [cite: 521]
+* *Jikan API - Open-Source MyAnimeList API.* jikan.moe
+* *Jakarta Bean Validation Specification.* jakarta.ee
