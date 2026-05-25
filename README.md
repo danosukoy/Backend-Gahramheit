@@ -1,6 +1,6 @@
 [![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/9WoPPVkS)
 
-# [Título del Proyecto: Debe ser descriptivo y reflejar el propósito o la solución]
+# Gahramheit - Plataforma Social de Gestión y Resumen Anual de Anime
 
 **Curso:** CS 2031 Desarrollo Basado en Plataforma  
 **Entrega:** Semana 9 - Culminación del Backend
@@ -16,13 +16,9 @@
 
 ---
 
-## Índice
----
-
 ## Índice / Tabla de Contenidos
-- [\[Título del Proyecto: Debe ser descriptivo y reflejar el propósito o la solución\]](#título-del-proyecto-debe-ser-descriptivo-y-reflejar-el-propósito-o-la-solución)
+- [Gahramheit - Plataforma Social de Gestión y Resumen Anual de Anime](#gahramheit---plataforma-social-de-gestión-y-resumen-anual-de-anime)
   - [Nombres de los Integrantes](#nombres-de-los-integrantes)
-  - [Índice](#índice)
   - [Índice / Tabla de Contenidos](#índice--tabla-de-contenidos)
   - [1. Introducción](#1-introducción)
     - [Contexto](#contexto)
@@ -50,43 +46,50 @@
     - [Licencia](#licencia)
   - [11. Referencias](#11-referencias)
 
---
+---
 
 ## 1. Introducción
 
 ### Contexto
-[Describir de forma clara y estructurada el contexto general en el que surge la necesidad o el problema que se va a resolver con la aplicación backend.]
+El consumo de contenido multimedia, específicamente el anime, ha experimentado un crecimiento exponencial a nivel global en los últimos años. Sin embargo, a medida que el catálogo de series disponibles se expande en múltiples servicios de streaming, los consumidores encuentran dificultades crecientes para mantener un registro organizado e histórico de sus hábitos de visualización. En este contexto, surge la necesidad de una plataforma que centralice el seguimiento de series y capítulos, convirtiéndose en el ecosistema principal del usuario para interactuar con la comunidad otaku.
 
 ### Objetivos del Proyecto
-* **Objetivo General:** [Detallar el objetivo principal del proyecto.]
+* **Objetivo General:** Desarrollar una plataforma backend robusta, escalable y segura para la gestión social de anime, permitiendo catalogar consumos individuales y automatizar un "Yearly Recap".
 * **Objetivos Específicos:**
-    * [Objetivo específico 1]
-    * [Objetivo específico 2]
-    * [Objetivo específico 3]
+    * Implementar una arquitectura limpia en capas utilizando Spring Boot que integre servicios de persistencia y consumo de APIs de terceros de manera eficiente
+    * Diseñar un algoritmo de procesamiento de datos para la generación asíncrona de los "Yearly Recap" sin degradar la performance del servidor.
+    * Garantizar la integridad de los datos de los usuarios mediante la incorporación de estrictas medidas de seguridad, validaciones de entrada de datos y control de accesos basados en roles.
 
 ---
 
 ## 2. Identificación del Problema o Necesidad
 
 ### Descripción del Problema
-[Explicar en detalle cuál es el problema técnico o la necesidad del mercado específico que el proyecto busca abordar con su implementación.]
+Los fanáticos del anime o mangas se enfrentan al problema recurrente de perder el rastro exacto de las series que consumen, los episodios vistos y las fechas de emisión. Actualmente, no existe una herramienta unificada en el mercado que aborde este seguimiento desde una perspectiva emocional y visual, privando a los usuarios de una forma interactiva de recapitular, revivir y compartir su comportamiento de consumo anual (al estilo de las aplicaciones líderes de streaming de música) con su círculo social o comunidades digitales.
 
 ### Justificación
-[Argumentar de manera sólida por qué es relevante y prioritario dar solución a este problema o satisfacer esta necesidad identificada en el mercado actual.]
+Solucionar esta problemática es sumamente relevante porque el software no solo funciona como un organizador funcional de tareas de visualización, sino que añade un valor social e identitario fundamental para el usuario. Al proveer métricas personalizadas y espacios de debate centralizados, se mitiga la fragmentación de la información de consumo y se fomenta la retención de los usuarios en una plataforma que celebra sus hábitos culturales de entretenimiento a través de mecánicas de gamificación y análisis de datos.
 
 ---
 
 ## 3. Descripción de la Solución
 
 ### Funcionalidades Implementadas
-[Listar y describir las funcionalidades principales construidas en el backend, detallando explícitamente cómo cada una de ellas contribuye directamente a mitigar o solucionar el problema identificado.]
+La plataforma backend de **Gahramheit** posee los servicios necesarios para soportar las siguientes capacidades operativas, las cuales componen el núcleo de nuestro MVP:
+1. **Búsqueda de Anime y Catálogo:** Sincronización en tiempo real con catálogos externos para consultar fichas técnicas, sinopsis, casas animadoras y actores de doblaje.
+2. **Seguimiento Dinámico (Watchlist):** Gestión individualizada del progreso de visualización, permitiendo marcar episodios específicos como vistos y categorizar el estado de la serie en la lista personal del usuario.
+3. **Sistema de Calificación y Feedback (Rating):** Persistencia de puntuaciones numéricas y comentarios escritos sobre series completas o episodios de forma independiente.
+4. **Foros de Discusión Comunitarios:** Habilitación de espacios de interacción social segmentados por serie, permitiendo la comunicación directa entre los usuarios de la plataforma.
+5. **Generador Automatizado de "Wrap" (Yearly Recap):** Algoritmo analítico encargado de agrupar hábitos de consumo, calcular tiempos totales de visualización y deducir géneros favoritos a fin de añ.
+6. **Sistema de Recompensas y Logros:** Gamificación integrada que otorga insignias de mérito (ej. "Maestro del Shonen") al completar metas del perfil.
 
 ### Tecnologías Utilizadas
-* **Lenguaje de Programación:** [Ej. Java]
-* **Framework Principal:** [Ej. Spring Boot]
-* **Persistencia de Datos:** [Ej. Spring Data JPA, Hibernate]
-* **Bases de Datos:** [Ej. PostgreSQL, MySQL]
-* **APIs Externas / Herramientas:** [Mencionar si integraron servicios de terceros o librerías clave como Lombok]
+* **Lenguaje de Programación:** Java 21
+* **Framework Principal:** Spring Boot (Spring Web, Spring Security)
+* **Persistencia de Datos:** Spring Data JPA con Hibernate
+* **Bases de Datos:** Neon (PostgreSQL)
+* **APIs Externas:** Jikan API (API REST gratuita basada en MyAnimeList)
+* **Herramientas:** Lombok, Validation, ModelMapper 
 
 ---
 
