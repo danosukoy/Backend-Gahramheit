@@ -12,14 +12,13 @@ import java.time.LocalDateTime;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    //400 - RECEPTOR PARA ERRORES 400 (DATOS INVÁLIDOS DE NEGOCIO)
     @ExceptionHandler(InvalidDataException.class)
     public ResponseEntity<ErrorResponse> handleInvalidData(InvalidDataException ex, HttpServletRequest request) {
         ErrorResponse error = ErrorResponse.builder()
                 .timestamp(LocalDateTime.now())
                 .status(HttpStatus.BAD_REQUEST.value())
                 .error("Bad Request - Datos Inválidos")
-                .message(ex.getMessage()) // "La puntuación debe ser entre 1 y 10"
+                .message(ex.getMessage())
                 .path(request.getRequestURI())
                 .build();
 
@@ -27,11 +26,9 @@ public class GlobalExceptionHandler {
     }
 
 
-    //400 -  RECEPTOR PARA ERRORES 400 (FORMULARIOS VACÍOS O MAL FORMADOS - NATIVO)
     @ExceptionHandler(org.springframework.web.bind.MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidationErrors(org.springframework.web.bind.MethodArgumentNotValidException ex, HttpServletRequest request) {
 
-        // Extraemos el primer error de validación para no abrumar al cliente
         String errorMessage = ex.getBindingResult().getFieldErrors().get(0).getDefaultMessage();
         String field = ex.getBindingResult().getFieldErrors().get(0).getField();
 
@@ -47,7 +44,6 @@ public class GlobalExceptionHandler {
     }
 
 
-    //401 Errores de INATORIZACION del usuario
     @ExceptionHandler(UnauthorizedTokenException.class)
     public ResponseEntity<ErrorResponse> handleUnauthorizedToken(UnauthorizedTokenException ex, HttpServletRequest request) {
         ErrorResponse error = ErrorResponse.builder()
@@ -61,7 +57,6 @@ public class GlobalExceptionHandler {
     }
 
 
-    //403 - RECEPTOR PARA ERRORES 403 (ACCESO DENEGADO / PERMISOS INSUFICIENTES)
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ErrorResponse> handleAccessDenied(AccessDeniedException ex, HttpServletRequest request) {
         ErrorResponse error = ErrorResponse.builder()
@@ -76,7 +71,6 @@ public class GlobalExceptionHandler {
     }
 
 
-    // 404 - Atrapa errores cuando no se encuentra un recurso (Ej: Anime o Usuario no existe)
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleResourceNotFound(ResourceNotFoundException ex, HttpServletRequest request) {
         ErrorResponse error = ErrorResponse.builder()
@@ -89,7 +83,6 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
 
-    //409 - Atrapa errores de DUPLICADOS
     @ExceptionHandler(DuplicateResourceException.class)
     public ResponseEntity<ErrorResponse> handlerDuplicateResource(DuplicateResourceException ex, HttpServletRequest request) {
         ErrorResponse error = ErrorResponse.builder()
@@ -103,7 +96,6 @@ public class GlobalExceptionHandler {
     }
 
 
-    //Atrapa CUALQUIER otro error inesperado (NullPointer, caídas de BD, etc.) un escudo de nivel 500
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGlobalException(Exception ex, HttpServletRequest request) {
         ErrorResponse error = ErrorResponse.builder()

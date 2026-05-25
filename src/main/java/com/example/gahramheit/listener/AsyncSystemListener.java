@@ -20,7 +20,6 @@ public class AsyncSystemListener {
         log.info("⚡ [ASYNC-THREAD: {}] Iniciando simulación de envío de correo a: {}",
                 Thread.currentThread().getName(), event.getEmail());
         try {
-            // Simulamos que conectarse a un servidor SMTP real toma 3 segundos
             Thread.sleep(3000);
             log.info("📧 [ASYNC] Correo de bienvenida enviado exitosamente al otaku: {}", event.getUsername());
         } catch (InterruptedException e) {
@@ -30,16 +29,12 @@ public class AsyncSystemListener {
         emailService.sendWelcomeEmail(event.getEmail(), event.getUsername());
     }
 
-    // =========================================================
-    // TRABAJADOR 2: RECÁLCULO DE ESTADÍSTICAS
-    // =========================================================
     @Async
     @EventListener
     public void handleAnimeReview(AnimeReviewedEvent event) {
         log.info("⚡ [ASYNC-THREAD: {}] Recalculando estadísticas para el Anime ID: {}",
                 Thread.currentThread().getName(), event.getAnimeId());
         try {
-            // Aquí en el futuro puedes inyectar el AnimeRepository y actualizar su puntaje global
             Thread.sleep(1500);
             log.info("📊 [ASYNC] Score promedio actualizado para el Anime ID: {}", event.getAnimeId());
         } catch (InterruptedException e) {

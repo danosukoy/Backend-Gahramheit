@@ -30,7 +30,7 @@ public class ReviewService {
     private final AnimeRepository animeRepository;
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
-    private final ApplicationEventPublisher eventPublisher; // ---> NUEVO (Spring lo inyecta automáticamente por @RequiredArgsConstructor)
+    private final ApplicationEventPublisher eventPublisher;
 
     public ReviewResDTO createReview(Long userId, ReviewCreateReqDTO request) {
         User user = userRepository.findById(userId)
