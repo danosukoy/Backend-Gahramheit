@@ -2,6 +2,8 @@ package com.example.gahramheit.listener;
 
 import com.example.gahramheit.event.AnimeReviewedEvent;
 import com.example.gahramheit.event.UserRegisteredEvent;
+import com.example.gahramheit.service.EmailService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
@@ -9,11 +11,9 @@ import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class AsyncSystemListener {
-
-    // =========================================================
-    // TRABAJADOR 1: ENVÍO DE CORREOS
-    // =========================================================
+    private final EmailService emailService;
     @Async
     @EventListener
     public void handleUserRegistration(UserRegisteredEvent event) {
@@ -27,6 +27,7 @@ public class AsyncSystemListener {
             Thread.currentThread().interrupt();
             log.error("Fallo al enviar el correo asíncrono", e);
         }
+        emailService.sendWelcomeEmail(event.getEmail(), event.getUsername());
     }
 
     // =========================================================
