@@ -18,7 +18,6 @@ public class UserRecap {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Relación con el usuario. LAZY evita que traiga toda la info del usuario si no la pides.
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
@@ -32,14 +31,12 @@ public class UserRecap {
     @Column(name = "top_genre", length = 50)
     private String topGenre;
 
-    // Puedes guardar el top 5 como un string JSON ligero
     @Column(name = "top_5_animes", columnDefinition = "TEXT")
     private String top5Animes;
 
     @Column(name = "average_score")
     private Double averageScore;
 
-    // Aquí se guardará el mensaje generado por la IA
     @Column(name = "ai_personalized_message", columnDefinition = "TEXT")
     private String aiPersonalizedMessage;
 }

@@ -28,20 +28,16 @@ public class DataPopulatorService {
     public void populateRemainingTables() {
         System.out.println("=== INICIANDO SEEDER: LLENANDO EPISODIOS, USERS Y REVIEWS ===");
 
-        // 1. Crear 5 usuarios falsos en tu tabla 'users'
         List<User> testUsers = createTestUsers();
 
-        // 2. Traer los animes que ya están en tu base de datos Neon
         List<Anime> existingAnimes = animeRepository.findAll();
 
-        // Vamos a llenar datos solo para los primeros 20 animes
         int limit = Math.min(20, existingAnimes.size());
 
         for (int i = 0; i < limit; i++) {
             Anime anime = existingAnimes.get(i);
             System.out.println("-> Descargando data para: " + anime.getTitle());
 
-            // --- A. LLENAR TABLA EPISODIOS ---
             try {
                 String epUrl = JIKAN_BASE_URL + "/anime/" + anime.getId() + "/episodes";
                 JikanEpisodeResponse epResponse = restTemplate.getForObject(epUrl, JikanEpisodeResponse.class);
@@ -56,13 +52,12 @@ public class DataPopulatorService {
                     }
                 }
             } catch (Exception e) {
-                System.out.println("❌ Error crítico en episodios para " + anime.getTitle() + ": " + e.getMessage());
-                e.printStackTrace(); // <-- Esto te dirá exactamente qué falló en la consola
+                System.out.println("Error crítico en episodios para " + anime.getTitle() + ": " + e.getMessage());
+                e.printStackTrace();
             }
 
             try { Thread.sleep(1500); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
 
-            // --- B. LLENAR TABLA REVIEWS ---
             try {
                 String revUrl = JIKAN_BASE_URL + "/anime/" + anime.getId() + "/reviews";
                 JikanReviewResponse revResponse = restTemplate.getForObject(revUrl, JikanReviewResponse.class);
@@ -87,22 +82,20 @@ public class DataPopulatorService {
                     }
                 }
             } catch (Exception e) {
-                System.out.println("❌ Error crítico en reviews para " + anime.getTitle() + ": " + e.getMessage());
-                e.printStackTrace(); // <-- Esto te dirá exactamente qué falló en la consola
+                System.out.println("Error crítico en reviews para " + anime.getTitle() + ": " + e.getMessage());
+                e.printStackTrace();
             }
 
             try { Thread.sleep(1500); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
 
-            // --- C. LLENAR TABLA USER_ANIME_LIST ---
             for (User user : testUsers) {
                 if (Math.random() > 0.5) {
                     UserAnimeListId id = new UserAnimeListId(user.getId(), anime.getId());
                     Status randomStatus = Status.values()[(int) (Math.random() * Status.values().length)];
 
-                    // 🔥 VALIDACIÓN DE SEGURIDAD PARA EVITAR DUPLICADOS
                     if (userAnimeListRepository.existsById(id)) {
                         System.out.println("La lista para el usuario " + user.getUsername() + " y anime " + anime.getTitle() + " ya existe. Saltando...");
-                        continue; // Si ya existe en Neon, se lo salta y continúa con el siguiente
+                        continue;
                     }
 
                     UserAnimeList userAnime = new UserAnimeList();
@@ -124,7 +117,6 @@ public class DataPopulatorService {
         String[] usernames = {"otaku_peru", "luffy_king", "skynet_anime", "gaara_sand", "goku_super"};
 
         for (String username : usernames) {
-            // Revisa si ya lo creamos antes para no duplicarlo
             Optional<User> existing = userRepository.findByUsername(username);
             if (existing.isPresent()) {
                 users.add(existing.get());
@@ -132,7 +124,7 @@ public class DataPopulatorService {
                 User newUser = new User();
                 newUser.setUsername(username);
                 newUser.setEmail(username + "@gahramheit.com");
-                newUser.setPassword("password123"); // Contraseña falsa para pruebas
+                newUser.setPassword("password123");
                 newUser.setRole(Role.USER);
                 users.add(userRepository.save(newUser));
             }
