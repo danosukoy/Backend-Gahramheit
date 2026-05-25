@@ -576,7 +576,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"animeId\": 42,\n    \"rating\": 9.5,\n    \"content\": \"Una obra de arte en animación y narrativa de esta temporada.\"\n}"
+              "raw": "{\n    \"animeId\": 42,\n    \"score\": 9.5,\n    \"comment\": \"Una obra de arte en animación y narrativa de esta temporada.\"\n}"
             },
             "url": {
               "raw": "{{base_url}}/reviews?userId=1",
