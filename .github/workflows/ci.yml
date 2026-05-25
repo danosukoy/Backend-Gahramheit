@@ -21,5 +21,14 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
 
+      # PASO CLAVE: Asegurar que Docker esté disponible para Testcontainers
+      - name: Verify Docker Status
+        run: |
+          docker info
+          sudo chmod 666 /var/run/docker.sock
+
       - name: Build with Maven and Run Tests
+        env:
+          # Optimiza Testcontainers para que no use Ryuk (el contenedor de limpieza) si da problemas de timeout
+          TESTCONTAINERS_RYUK_DISABLED: "true"
         run: mvn -B clean verify
