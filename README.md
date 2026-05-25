@@ -110,7 +110,7 @@ La plataforma backend de **Gahramheit** posee los servicios necesarios para sopo
 
 ### 1. User (Usuario)
 Representa a los usuarios registrados en la plataforma. 
-* **Atributos clave:** `id` (Autoincremental), `username` (Único), `email` (Único) y `password`.
+* **Atributos clave:** `id` (Autoincremental), `username` (Único), `email` (Único), `password` y `role` .
 * **Relaciones:**
     * `@OneToMany` con `Review`: Un usuario puede escribir múltiples reseñas. Configurado con `CascadeType.ALL` y `orphanRemoval = true` para asegurar que si un usuario es eliminado, sus reseñas asociadas se borren de forma automática.
     * `@OneToMany` con `UserAnimeList`: Relación con la lista personalizada de animes del usuario. Cuenta con la misma configuración de cascada completa (`CascadeType.ALL`).
@@ -304,6 +304,7 @@ Para garantizar un trbajo coordinado, ordenado, transparente, el equipo eligió 
 * **Pull Requests:** Una vez que un integrante culminaba el desarrollo en su respectiva rama `feat/`, abría un *Pull Request* (PR) hacia la rama principal `main`. Cada PR fue sometido a una revisión por pares (*Code Review*) para asegurar el cumplimiento de la arquitectura en capas, las validaciones de datos y las buenas prácticas de Spring Boot antes de autorizar su integración final.
 
 ### Integración Continua (CI/CD) con GitHub Actions
+* Con el objetivo de automatizar la verificación de la calidad del software y acelerar el ciclo de retroalimentación, el equipo implementó un flujo de **Integración Continua (CI)** mediante un *workflow* personalizado en **GitHub Actions** (`.github/workflows/ci.yml`). Esto garantiza que cada fragmento de código integrado cumpla con los estándares requeridos antes de consolidarse en la versión estable de la plataforma.
 ---
 
 ## 9. Conclusión
