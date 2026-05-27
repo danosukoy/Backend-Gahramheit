@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@RequestMapping
 @RequiredArgsConstructor
 public class ReviewController {
 
@@ -37,7 +38,7 @@ public class ReviewController {
         return ResponseEntity.ok(reviewService.getReviewById(id));
     }
 
-    @PreAuthorize("hasRole('USER', 'MODERATOR', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('USER', 'MODERATOR', 'ADMIN')")
     @DeleteMapping("/reviews/{id}")
     public ResponseEntity<Void> deleteReview(@PathVariable Long id) {
         reviewService.deleteReview(id);

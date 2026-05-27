@@ -55,4 +55,23 @@ public class CommentController {
         commentService.dislikeComment(commentId);
         return ResponseEntity.ok().build();
     }
+
+    @PreAuthorize("hasRole('USER')")
+    @DeleteMapping("/api/comments/{commentId}")
+    public ResponseEntity<Void> deleteComment(
+            @PathVariable Long commentId,
+            @RequestParam Long userId) {
+        commentService.deleteComment(commentId, userId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PreAuthorize("hasRole('USER')")
+    @PutMapping("/api/comments/{commentId}")
+    public ResponseEntity<CommentResDTO> editComment(
+            @PathVariable Long commentId,
+            @RequestParam Long userId,
+            @Valid @RequestBody CommentCreateReqDTO request) {
+        return ResponseEntity.ok(commentService.editComment(commentId, userId, request));
+    }
+
 }

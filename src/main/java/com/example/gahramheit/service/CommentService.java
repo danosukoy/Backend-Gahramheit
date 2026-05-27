@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -115,4 +116,30 @@ public class CommentService {
                 .hasReplies(hasReplies)
                 .build();
     }
+
+    public void deleteComment(Long commentId, Long userId) {
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new ResourceNotFoundException("Comment not found"));
+
+        // Validate ownership
+        if (!comment.getUser().getId().equals(userId)) {
+            throw new AccessDeniedException("You can only delete your own comments");
+        }
+        commentRepository.delete(comment);
+    }
+    public CommentResDTO editComment(Long commentId, Long userId, CommentCreateReqDTO request) {
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new ResourceNotFoundException("Comment not found"));
+
+        // Validate ownership
+        if (!comment.getUser().getId().equals(userId)) {
+            throw new AccessDeniedException("You can only edit your own comments");
+        }
+
+        comment.setContent(request.getContent());
+        comment.setCreatedAt(LocalDateTime.now());
+        commentRepository.save(comment);
+        return toDto(comment);
+    }
+
 }
