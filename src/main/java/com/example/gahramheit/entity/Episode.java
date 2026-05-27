@@ -24,6 +24,7 @@ public class Episode {
     @Column(name = "episode_number", nullable = false)
     private Integer episodeNumber;
 
+    @Column(columnDefinition = "TEXT")
     private String title;
 }
 

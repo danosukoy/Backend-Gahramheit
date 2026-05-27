@@ -26,7 +26,7 @@ public class Anime {
     @Column(name = "episodes_count")
     private Integer episodesCount;
 
-    @Column(name = "image_url")
+    @Column(name = "image_url", columnDefinition = "TEXT")
     private String imageUrl;
 
     @Column(columnDefinition = "TEXT")
@@ -39,7 +39,7 @@ public class Anime {
     @Column(name = "release_year")
     private Integer releaseYear;
 
-    @Column(name = "voice_actors")
+    @Column(name = "voice_actors",columnDefinition = "text")
     private String voiceActors;
 
     @Column(length = 100)
