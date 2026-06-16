@@ -37,9 +37,9 @@ public class AnimeController {
         return ResponseEntity.ok(animeService.getAnimeDetails(id));
     }
 
-    @GetMapping("/genre/name/{name}")
-    public ResponseEntity<Page<AnimeDTO>> findByGenreName(
-            @PathVariable String name,
+    @GetMapping("/genre")
+    public ResponseEntity<Page<AnimeDTO>> findByGenre(
+            @RequestParam String name,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
