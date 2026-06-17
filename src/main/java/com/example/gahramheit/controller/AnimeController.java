@@ -48,4 +48,15 @@ public class AnimeController {
         );
     }
     //request dar anime por genero
+
+    //super endpoint
+    @GetMapping
+    public ResponseEntity<Page<AnimeDTO>> getAnimeCatalog(
+            @RequestParam(required = false) String keyword, // Puede venir nulo
+            @RequestParam(required = false) String genre,   // Puede venir nulo
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        return ResponseEntity.ok(animeService.getAnimeCatalog(keyword, genre, page, size));
+    }
 }

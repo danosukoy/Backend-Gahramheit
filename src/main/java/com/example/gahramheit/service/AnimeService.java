@@ -76,4 +76,15 @@ public class AnimeService {
                 .findByGenres_NameIgnoreCase(name, pageable)
                 .map(this::toCardDto);
     }
+
+    public Page<AnimeDTO> getAnimeCatalog(String keyword, String genre, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+
+        String finalKeyword = (keyword != null && !keyword.trim().isEmpty()) ? keyword.trim() : null;
+        String finalGenre = (genre != null && !genre.trim().isEmpty()) ? genre.trim() : null;
+
+        Page<Anime> animesPage = animeRepository.findWithFilters(finalKeyword, finalGenre, pageable);
+
+        return animesPage.map(this::toCardDto);
+    }
 }
