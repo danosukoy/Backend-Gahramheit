@@ -28,8 +28,9 @@ public interface AnimeRepository extends JpaRepository<Anime, Long> {
 
     Page<Anime> findByGenres_NameIgnoreCase(String name, Pageable pageable);
 
+    // EL SUPER QUERY CORREGIDO
     @Query("SELECT DISTINCT a FROM Anime a LEFT JOIN a.genres g " +
-            "WHERE (:keyword IS NULL OR LOWER(a.title) LIKE LOWER(CONCAT('%', :keyword, '%'))) " +
+            "WHERE LOWER(a.title) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
             "AND (:genre IS NULL OR g.name = :genre)")
     Page<Anime> findWithFilters(@Param("keyword") String keyword,
                                 @Param("genre") String genre,

@@ -80,9 +80,13 @@ public class AnimeService {
     public Page<AnimeDTO> getAnimeCatalog(String keyword, String genre, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
 
-        String finalKeyword = (keyword != null && !keyword.trim().isEmpty()) ? keyword.trim() : null;
+        // CORRECCIÓN: Si el keyword viene nulo, le pasamos "", no null.
+        String finalKeyword = (keyword != null && !keyword.trim().isEmpty()) ? keyword.trim() : "";
+
+        // El género se queda igual (aquí sí funciona bien el null porque usa un operador '=' y no un LOWER)
         String finalGenre = (genre != null && !genre.trim().isEmpty()) ? genre.trim() : null;
 
+        // Llamamos al repositorio
         Page<Anime> animesPage = animeRepository.findWithFilters(finalKeyword, finalGenre, pageable);
 
         return animesPage.map(this::toCardDto);

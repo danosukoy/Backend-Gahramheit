@@ -20,13 +20,13 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AnimeController {
     private final AnimeService animeService;
-    @GetMapping
+    /*@GetMapping
     public ResponseEntity<Page<AnimeDTO>>   getAnimeCatalog(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, size);
         return ResponseEntity.ok(animeService.getAnimeCatalog(page, size));
-    }
+    }*/
     @GetMapping("/search")
     public ResponseEntity<List<AnimeDTO>> searchAnimesByTitle(
             @RequestParam String keyword) {
