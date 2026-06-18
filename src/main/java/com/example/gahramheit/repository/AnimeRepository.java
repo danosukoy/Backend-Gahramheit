@@ -5,6 +5,8 @@ import com.example.gahramheit.entity.Genre;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -25,5 +27,13 @@ public interface AnimeRepository extends JpaRepository<Anime, Long> {
     List<Anime> findByStudioIsNullOrReleaseYearIsNull();
 
     Page<Anime> findByGenres_NameIgnoreCase(String name, Pageable pageable);
+
+    // EL SUPER QUERY CORREGIDO
+    @Query("SELECT DISTINCT a FROM Anime a LEFT JOIN a.genres g " +
+            "WHERE LOWER(a.title) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
+            "AND (:genre IS NULL OR g.name = :genre)")
+    Page<Anime> findWithFilters(@Param("keyword") String keyword,
+                                @Param("genre") String genre,
+                                Pageable pageable);
 }
 
