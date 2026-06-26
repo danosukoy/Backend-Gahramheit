@@ -38,7 +38,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                // Forzamos explícitamente a usar el método de configuración CORS de abajo
+                // Forzar el uso de nuestra configuración de CORS abierta
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
                 .exceptionHandling(ex -> ex.authenticationEntryPoint(jwtAuthenticationEntryPoint))
@@ -70,18 +70,20 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        // Agregamos tus dos entornos autorizados
-        configuration.setAllowedOriginPatterns(Arrays.asList(
-                "http://localhost:5173",
-                "http://54.211.219.233:5173"
-        ));
+        // Permitir absolutamente todos los orígenes de internet
+        configuration.setAllowedOriginPatterns(Arrays.asList("*"));
 
+        // Permitir todos los métodos HTTP habituales
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
-        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type"));
+
+        // Permitir todas las cabeceras para que no fallen los tokens JWT
+        configuration.setAllowedHeaders(Arrays.asList("*"));
+        
+        // Permitir el uso de credenciales y cookies con el comodín de patrón activo
         configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        // Mapeo corregido apuntando al objeto configuration
+        // Mapear la configuración a absolutamente todas las rutas
         source.registerCorsConfiguration("/**", configuration); 
         
         return source;
