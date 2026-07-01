@@ -18,28 +18,23 @@ import java.util.*;
 @RequiredArgsConstructor
 @SuppressWarnings({"SpellCheckingInspection", "unused"})
 public class DataPopulatorService {
-
-    // Tus 4 repositorios principales + User (necesario para las reviews)
     private final AnimeRepository animeRepository;
     private final GenreRepository genreRepository;
     private final EpisodeRepository episodeRepository;
     private final ReviewRepository reviewRepository;
     private final UserRepository userRepository;
-    // Agrega esta línea junto a tus otros repositorios
     private final PlatformTransactionManager transactionManager;
 
     private final RestTemplate restTemplate = new RestTemplate();
     private static final String JIKAN_BASE_URL = "https://api.jikan.moe/v4";
 
-    // 💡 EL BUCLE AUTOMÁTICO
-
     public void syncTopAnime(int pagesToSync) {
         log.info("🚀 INICIANDO BUCLE AUTOMÁTICO PARA {} PÁGINAS...", pagesToSync);
 
-        // 1. Necesitamos usuarios en la BD para poder crear las Reviews
+        // usuarios en la BD para las Reviews
         List<User> users = seedUsers();
 
-        // 2. El bucle que recorre las páginas automáticamente
+        // recorre las páginas automáticamente
         for (int page = 1; page <= pagesToSync; page++) {
             log.info("===========================================");
             log.info("📚 DESCARGANDO PÁGINA {} DE {}", page, pagesToSync);
@@ -65,7 +60,7 @@ public class DataPopulatorService {
     }
 
     private void processSingleAnime(JikanTopAnimeResponse.AnimeData data, List<User> users) {
-        // Si ya existe, salimos rápido antes de abrir una transacción
+        // Si ya existe sale antes de abrir una transacción
         if (animeRepository.existsById(data.getMal_id())) {
             return;
         }
@@ -74,11 +69,11 @@ public class DataPopulatorService {
             return;
         }
 
-        // 💡 CADA ANIME ABRE Y CIERRA SU PROPIA TRANSACCIÓN AQUÍ
+        // cada anime abre y cierra su transaccion
         new TransactionTemplate(transactionManager).executeWithoutResult(status -> {
             log.info("📥 Procesando en transacción: {}", data.getTitle());
 
-            // --- 1. ENTIDAD ANIME ---
+            // ANIME
             Anime anime = new Anime();
             anime.setId(data.getMal_id());
             anime.setTitle(data.getTitle());
@@ -97,7 +92,7 @@ public class DataPopulatorService {
                 anime.setStudio(data.getStudios().getFirst().getName());
             }
 
-            // --- 2. ENTIDAD GENRE ---
+            // GENRE
             Set<Genre> animeGenres = new HashSet<>();
             if (data.getGenres() != null) {
                 for (JikanTopAnimeResponse.GenreDto gDto : data.getGenres()) {
@@ -114,20 +109,19 @@ public class DataPopulatorService {
             }
             anime.setGenres(animeGenres);
 
-            // Guardar Anime base primero
+            // Anime base
             animeRepository.save(anime);
 
-            // --- 3. TRAER DIRECTORES Y ACTORES ---
+            // trae directores y actores
             fetchStaffAndCast(anime);
 
-            // --- 4. ENTIDAD EPISODE ---
+            // EPISODE
             fetchEpisodes(anime);
 
-            // --- 5. ENTIDAD REVIEW ---
+            // REVIEW
             fetchReviews(anime, users);
         });
     }
-
 
     private void fetchStaffAndCast(Anime anime) {
         try {
@@ -154,7 +148,7 @@ public class DataPopulatorService {
                 anime.setVoiceActors(cast);
             }
             sleepToAvoidRateLimit();
-            animeRepository.save(anime); // Actualizamos el anime con voces y directores
+            animeRepository.save(anime); // anime con voces y directores
         } catch (Exception e) {}
     }
 
@@ -220,7 +214,7 @@ public class DataPopulatorService {
 
     private void sleepToAvoidRateLimit() {
         try {
-            Thread.sleep(1250); // Mínimo 1.25s para asegurar no ser bloqueados
+            Thread.sleep(1250); // Mínimo 1.25s para que no se bloquee
         } catch (InterruptedException ex) {
             Thread.currentThread().interrupt();
         }
