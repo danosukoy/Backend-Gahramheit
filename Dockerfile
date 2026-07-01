@@ -15,8 +15,8 @@ RUN ./mvnw dependency:go-offline -B
 # Copy project source code
 COPY src ./src
 
-# Build the package (skip tests to speed up the deploy build process)
-RUN ./mvnw package -DskipTests -B
+# Build the package (skip test compilation and execution to speed up deploy)
+RUN ./mvnw package -Dmaven.test.skip=true -B
 
 # Stage 2: Run the application using Eclipse Temurin JRE 21
 FROM eclipse-temurin:21-jre
