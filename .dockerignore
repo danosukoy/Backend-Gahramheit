@@ -1,0 +1,25 @@
+# Ignore Git and IDE configurations
+.git
+.gitignore
+.github
+.idea
+*.iml
+.qodana
+qodana.yaml
+
+# Ignore build directories and wrappers not needed in compilation
+target/
+out/
+.mvn/wrapper/maven-wrapper.jar
+mvnw.cmd
+
+# Ignore local dotenv files
+.env
+.env.local
+.env.*.local
+
+# Ignore documentation/reports
+INFORME_BACKEND.md
+postman-collection.json
+imgs/
+README.md
