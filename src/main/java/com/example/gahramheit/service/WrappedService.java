@@ -29,6 +29,7 @@ public class WrappedService {
     private final ReviewRepository reviewRepository;
     private final UserAnimeListRepository userAnimeListRepository;
     private final AIService aiService;
+    private final BadgeService badgeService;
 
     @Transactional(readOnly = true)
     public UserRecapResDTO getRecap(Long userId, Integer year) {
@@ -87,12 +88,16 @@ public class WrappedService {
             }
         }
 
-        String badge = completedCount >= 10 ? "Completador Serial" : "Principiante";
+        String badge = badgeService.evaluateBadge(completedCount, totalEpisodes);
 
         String aiMessage = aiService.generateOtakuProfile(
                 user.getUsername(),
                 topGenre,
-                avgScore != null ? avgScore : 0.0
+                avgScore != null ? avgScore : 0.0,
+                totalEpisodes,
+                completedCount,
+                year,
+                top5AnimeTitles
         );
 
         String top5Joined = String.join(SEPARATOR, top5AnimeTitles);
